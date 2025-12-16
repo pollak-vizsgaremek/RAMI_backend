@@ -1,0 +1,36 @@
+# Dependencies
+/node_modules
+/jspm_packages/
+/package-lock.json
+/yarn.lock
+/pnpm-lock.yaml
+
+# Build Artifacts
+/dist
+/build
+/out
+/tmp
+
+# Editor/IDE/OS Files
+.DS_Store
+.vscode/
+.idea/
+.project
+Thumbs.db
+
+# Logs and Metadata
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+coverage/
+*.log
+*.sqlite
+
+# Sensitive Configuration Files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.config.js
