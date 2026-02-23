@@ -11,12 +11,16 @@
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "generate-api-key": "^1.0.2",
     "jsonwebtoken": "^9.0.3",
-    "mongodb": "^7.0.0"
+    "mongodb": "^7.0.0",
+    "mongoose": "^9.2.1",
+    "node-cron": "^4.2.1",
+    "swagger-ui-express": "^5.0.1"
   },
   "name": "rami_backend",
   "version": "1.0.0",

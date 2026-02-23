@@ -23,7 +23,7 @@ const connectDatabase = async () => {
       await client.connect();
     }
 
-    db = client.db("MAJD IDE KELL A DATABASE NEVE");
+    db = client.db("rami");
     return db;
   } catch (error) {
     console.error("Sikertelen az adatbázis kapcsolat!");
