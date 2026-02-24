@@ -1,12 +1,12 @@
 import { Db, MongoClient } from "mongodb";
-import * as dotenv from "dotenv";
+import dotenv from "dotenv";
 dotenv.config();
 
 let client: MongoClient | undefined | null;
 let db: Db | undefined | null;
 
 const connectDatabase = async () => {
-  const uri = process.env.DB_CONNECTION_STRING;
+  const uri = process.env.DATABASE_URL;
 
   if (!uri) {
     console.error("Nem létezik az adatbázis string!");
