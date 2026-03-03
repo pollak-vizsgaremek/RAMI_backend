@@ -21,6 +21,7 @@ const connectDatabase = async () => {
         maxPoolSize: 15,
       });
       await client.connect();
+      
     }
 
     db = client.db("rami");
@@ -30,5 +31,6 @@ const connectDatabase = async () => {
     throw new Error("Sikertelen az adatbázis kapcsolat!");
   }
 };
+
 
 export { connectDatabase };

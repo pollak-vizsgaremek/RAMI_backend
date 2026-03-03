@@ -10,14 +10,6 @@ const userSchema = new mongoose.Schema({
     maxLength: 60,
     minlength:2
   },
-  username: {
-    type: String,
-    required: [true, 'User Username is requried!'],
-    unique: true,
-    trim: true,
-    maxLength: 40,
-    minlength: 3
-  },
   email: {
     type: String,
     required: [true, "User Email is requried"],
@@ -36,20 +28,24 @@ const userSchema = new mongoose.Schema({
     match: [
       /^(?:\+36|06)(?:1\d{7}|(?:20|21|30|31|50|70)\d{7}|(?:[2-9][2-9]|40|80|90)\d{6})$/,
       'Please use a valid Hungarian phone number.'
-    ]
+    ],
+    default: null,
   },
-  address: {
-    type: String,
-    required: false,
-    trim: true,
-  },
+
   role: {
+    required: false,
     type: String,
     enum: ['user', 'moderator', 'admin'],
     default: 'user',
   },
+
+  apiKey: {
+    type: String,
+    required: false,
+    unique: true,
+  },
 }, { timestamps: true });
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('users', userSchema);
 
 export default User;
