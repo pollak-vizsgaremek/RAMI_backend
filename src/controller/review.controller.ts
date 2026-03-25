@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 import e, { Request, Response } from "express";
-import Rewiwe from "../models/ertekeles.model";
+import Review from "../models/ertekeles.model";
 
 export const getReviews = async (req: Request, res: Response) => {
     try {
-        const reviews = await Rewiwe.find();
+        const reviews = await Review.find();
         res.status(200).json(reviews);
     } catch (error) {
         res.status(500).json({ error: "Szerver hiba az értékelések lekérdezésekor." });
@@ -16,7 +16,7 @@ export const getReviews = async (req: Request, res: Response) => {
 export const createReview = async (req:Request, res: Response) => {
     try {
         const { user, instructor, rating} = req.body;
-        const newReview = await Rewiwe.create({ user, instructor, rating });
+        const newReview = await Review.create({ user, instructor, rating });
         res.status(201).json(newReview);
     } catch (error) {
         res.status(500).json({ error: "Szerver hiba az értékelés létrehozásakor." });
@@ -28,7 +28,7 @@ export const createReview = async (req:Request, res: Response) => {
 
 export const deleteReview = async (req: Request, res: Response) => {
     try {
-        const review = await Rewiwe.findByIdAndDelete(req.params.id);
+        const review = await Review.findByIdAndDelete(req.params.id);
         if (!review) {
             return res.status(404).json({ error: "Értékelés nem található." });
         }

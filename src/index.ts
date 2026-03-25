@@ -6,7 +6,7 @@ import cors from "cors";
 
 //-- Routes imports
 import userRouter from "./routes/user.routes";
-import reviewRouter from "./routes/reviwe.routes";
+import reviewRouter from "./routes/review.routes";
 import schoolRouter from "./routes/school.routes";
 import instructorRouter from "./routes/instructor.routes";
 import authRouter from "./routes/auth.routes";

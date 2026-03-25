@@ -60,4 +60,4 @@ const oktatoSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-export default mongoose.model('Teacher', oktatoSchema);
+export default mongoose.model('Oktato', oktatoSchema);

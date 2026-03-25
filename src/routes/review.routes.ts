@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authorize } from "../middleware/apiKey.middleware";
 import errorMiddleware from "../middleware/error.middleware";
-import {  getReviews, createReview, deleteReview} from "../controller/reviwe.controller";
+import {  getReviews, createReview, deleteReview} from "../controller/review.controller";
 
 const reviewRouter = Router();
 

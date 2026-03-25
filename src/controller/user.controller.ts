@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
-import User from "../models/User.model";
-
+import User from "../models/user.model";
 
 export const getUsers = async (req: Request, res: Response) => {
-try {
+  try {
     const users = await User.find();
     res.status(200).json(users);
   } catch (error) {
@@ -27,13 +26,17 @@ export const getUserById = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
     if (!user) {
       return res.status(404).json({ error: "Felhasználó nem található." });
     }
     res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({ error: "Szerver hiba a felhasználó frissítésekor." });
+    res
+      .status(500)
+      .json({ error: "Szerver hiba a felhasználó frissítésekor." });
     console.error("Hiba a felhasználó frissítésekor:", error);
   }
 };

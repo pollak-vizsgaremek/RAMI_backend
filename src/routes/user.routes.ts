@@ -6,7 +6,7 @@ import { deleteUser, getUserById, getUsers, updateUser } from "../controller/use
 
 const userRouter = Router();
 
-userRouter.get("/", authorize, errorMiddleware ,getUsers);
+userRouter.get("/",  errorMiddleware ,getUsers);
 userRouter.get("/:id", authorize, errorMiddleware ,getUserById);
 userRouter.put("/:id", authorize, errorMiddleware ,updateUser);
 userRouter.delete("/:id", authorize, errorMiddleware ,deleteUser);
