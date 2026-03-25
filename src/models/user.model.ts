@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     match: [/\S+@\S+\.\S+/, 'Please use a valid email address.'],
+    index: true
   },
   password: {
     type: String,
@@ -39,13 +40,8 @@ const userSchema = new mongoose.Schema({
     default: 'user',
   },
 
-  apiKey: {
-    type: String,
-    required: false,
-    unique: true,
-  },
 }, { timestamps: true });
 
-const User = mongoose.model('users', userSchema);
+const User =mongoose.models.User || mongoose.model('User', userSchema);   
 
 export default User;

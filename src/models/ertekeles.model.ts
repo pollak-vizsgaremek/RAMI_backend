@@ -4,25 +4,43 @@ const ertekelesSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: [true, "Felhasználó ID kötelező!"]
+        required: [true, "Felhasználó ID kötelező!"],
+        index: true
     },
-    oktato: {
+    instructor: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Oktato",
-        required: [true, "Oktató ID kötelező!"]
+        required: [true, "Oktató ID kötelező!"],
+        index: true
     },
    
-    ertekeles: {
-        type: Number,
-        required: [true, "Értékelés kötelező!"],
-        min: [1, "Minimum értékelés 1!"],
-        max: [5, "Maximum értékelés 5!"]
-    },
-    megjegyzes: {
-        type: String,
-        trim: true,
-        maxlength: [500, "Maximális hossz 500 karakter!"]
-    }
-}, { timestamps: true });
+    rating:[{
+            patience: {
+            type: Number,
+            required: [true, "Értékelés kötelező!"],
+            min: [1, "Minimum értékelés 1!"],
+            max: [10, "Maximum értékelés 10!"]
+        },
+            teachingquality: {
+            type: Number,
+            required: [true, "Értékelés kötelező!"],
+            min: [1, "Minimum értékelés 1!"],
+            max: [10, "Maximum értékelés 10!"]
+        },
+            clarity: {
+            type: Number,
+            required: [true, "Értékelés kötelező!"],
+            min: [1, "Minimum értékelés 1!"],
+            max: [10, "Maximum értékelés 10!"]
+        },
+            review: {
+            type: String,
+            trim: true,
+            maxlength: [200, "Maximális hossz 200 karakter!"]
+        },  
+    }],
+
+},
+{ timestamps: true });
 
 export default mongoose.model("Ertekeles", ertekelesSchema);

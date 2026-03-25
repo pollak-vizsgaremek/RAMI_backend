@@ -25,7 +25,7 @@ const iskolaSchema = new mongoose.Schema({
     {
       phoneNumber: {
          type: String,
-         required: [true, 'Iskola telefonszáma kötelező!'],
+         required: false,
          match: [
          /^(?:\+36|06)(?:1\d{7}|(?:20|21|30|31|50|70)\d{7}|(?:[2-9][2-9]|40|80|90)\d{6})$/,
          'Kérem, adjon meg egy érvényes magyar telefonszámot!']
@@ -53,15 +53,16 @@ const iskolaSchema = new mongoose.Schema({
         ]
  },
     kepzesek: {
-        enum:["B","BE","T","AM","A1","A2","A","C","CE","D","DE"],
-        type: [String],
-        required: [true, 'Legalább egy képzés megadása kötelező!']
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Kepzes',
+        required: [true, 'Iskola képzései kötelező!']
     },
     instructors: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Oktato',
-            required: [true, 'Legalább egy oktató megadása kötelező!']
+            required: [true, 'Legalább egy oktató megadása kötelező!'],
+            index: true
         }
     ]
 }, { timestamps: true });

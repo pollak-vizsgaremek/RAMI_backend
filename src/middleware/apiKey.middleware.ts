@@ -1,26 +1,54 @@
 import { NextFunction, Request, Response } from "express";
 import { validate } from "../service/apiKey.service";
+import jwt from "jsonwebtoken";
+import dotenv from 'dotenv';
+import User from "../models/User.model";
+import Teacher from "../models/oktato.model";
 
-export const apiKeyMiddleware = async (
+
+export const authorize = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const apiKey = (req.headers["x-api-key"] as string) ?? "";
+  try {
+    let token
 
-  if (!apiKey) {
-    res.status(401).json({
-      message: "API KEY header is required!",
-    });
-    return;
+    if (req.headers["authorization"] && req.headers["authorization"].startsWith("Bearer")) {
+      token = req.headers["authorization"].split(" ")[1];
+    }
+
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+    const decoded = await jwt.verify(token, process.env.JWT_SECRET!);
+
+    const user = await User.findById((decoded as any).userId);
+    if (!user) return res.status(401).json({ message: "Unauthorized" });
+
+    next();
+
+
+  }catch (error) {
+    console.error("Hiba az API kulcs ellenőrzésekor:", error);
+    res.status(401).json({ message: "Hiba történt az API kulcs ellenőrzésekor." });
   }
 
-  if (!(await validate(apiKey))) {
-    res.status(403).json({
-      message: "API KEY is not valid!",
-    });
-    return;
-  }
-
-  next();
 };
+
+export const authorize_school = async (req: Request, res: Response, next: NextFunction) => {
+  let token
+
+    if (req.headers["authorization"] && req.headers["authorization"].startsWith("Bearer")) {
+      token = req.headers["authorization"].split(" ")[1];
+    }
+
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+    const decoded = await jwt.verify(token, process.env.JWT_SECRET!);
+
+    const user = await Teacher.findById((decoded as any).userId);
+    if (!user) return res.status(401).json({ message: "Unauthorized" });
+
+    next();
+
+  };

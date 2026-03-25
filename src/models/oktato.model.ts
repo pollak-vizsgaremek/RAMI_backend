@@ -52,5 +52,12 @@ const oktatoSchema = new mongoose.Schema({
         ref: 'Kategoriak',
         required: [true, 'Oktató kategóriája kötelező!']
     }],
+    students: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: false
+    }],
 
 }, { timestamps: true });
+
+export default mongoose.model('Teacher', oktatoSchema);
