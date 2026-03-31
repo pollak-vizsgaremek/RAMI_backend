@@ -13,13 +13,16 @@ export interface iskolak{
     cim: string;
 }
 
-export interface users{
-    _id?: ObjectId;
-    username: string;
-    password: string;
-    szuletesiDatum: Date;
-    email: string;
-    nem: string;
+export interface users {
+  _id?: ObjectId;
+  username: string;
+  password: string;
+  szuletesiDatum: Date;
+  email: string;
+  nem: string;
+
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
 }
 
 export interface vizsgaUtvonalak{
