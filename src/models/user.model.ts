@@ -1,6 +1,4 @@
-import mongoose from 'mongoose';
-
-
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
@@ -33,7 +31,6 @@ const userSchema = new mongoose.Schema(
       ],
       default: null,
     },
-
     role: {
       required: false,
       type: String,
@@ -41,12 +38,17 @@ const userSchema = new mongoose.Schema(
       default: "user",
     },
 
+    // --- NEW FIELDS FOR EMAIL VERIFICATION ---
+    isVerified: { type: Boolean, default: false },
+    verificationToken: { type: String },
+    // -----------------------------------------
+
     passwordResetToken: { type: String },
     passwordResetExpires: { type: Date },
   },
   { timestamps: true },
 );
 
-const User =mongoose.models.User || mongoose.model('User', userSchema);   
+const User = mongoose.models.User || mongoose.model("User", userSchema);
 
 export default User;
