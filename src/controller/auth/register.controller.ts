@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import crypto from "crypto"; // Added crypto
 import User from "../../models/user.model";
-import sendEmail from "../../service/sendEmail.service"; // Import your email service!
+import {sendEmail} from "../../service/sendEmail.service"; // Import your email service!
 
 export const register = async (req: Request, res: Response): Promise<any> => {
   try {
@@ -12,6 +12,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
 
     if (existingUser) {
       return res.status(409).json({ message: "Felhasználó már létezik!" });
+      
     }
 
     const salt = await bcrypt.genSalt(10);

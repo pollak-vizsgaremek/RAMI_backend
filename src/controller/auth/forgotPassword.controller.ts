@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import crypto from "crypto";
 import User from "../../models/user.model";
-import sendEmail from "../../service/sendEmail.service";
+import {sendEmail} from "../../service/sendEmail.service";
 
 
 export const forgotPassword = async (

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
-if (process.env.DATABASE_URL) throw new Error("DATABASE_URL környezeti változó nincs beállítva!");
+if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL környezeti változó nincs beállítva!");
 
 export const connectDatabase = async () => {
     try {
