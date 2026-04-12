@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Review from "../models/ertekeles.model"; // Your exact model import
+import Review from "../models/rating.model"; // Your exact model import
 
 // --- ORIGINAL FUNCTIONS ---
 

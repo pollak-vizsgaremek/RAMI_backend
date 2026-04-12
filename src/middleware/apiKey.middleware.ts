@@ -3,7 +3,7 @@ import { validate } from "../service/apiKey.service";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import User from "../models/user.model";
-import Teacher from "../models/oktato.model";
+import Teacher from "../models/instructor.model";
 
 export const authorize = async (
   req: Request,

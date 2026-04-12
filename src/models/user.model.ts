@@ -34,17 +34,33 @@ const userSchema = new mongoose.Schema(
     role: {
       required: false,
       type: String,
-      enum: ["user", "moderator", "admin"],
+      enum: ["user", "moderator", "admin", ""],
       default: "user",
+      
     },
 
-    // --- NEW FIELDS FOR EMAIL VERIFICATION ---
-    isVerified: { type: Boolean, default: false },
-    verificationToken: { type: String },
-    // -----------------------------------------
+   
+    isVerified: {
+       type: Boolean, default: false 
+      },
+    verificationToken: { 
+      type: String 
+    },
+    
 
-    passwordResetToken: { type: String },
-    passwordResetExpires: { type: Date },
+    passwordResetToken: {
+       type: String 
+    },
+    passwordResetExpires: {
+       type: Date 
+    },
+    
+    instructors: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Oktato",
+      required: false,
+    },
+
   },
   { timestamps: true },
 );

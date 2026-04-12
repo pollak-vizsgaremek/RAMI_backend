@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const iskolaSchema = new mongoose.Schema(
+const schoolSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -47,7 +47,7 @@ const iskolaSchema = new mongoose.Schema(
         },
       },
     ],
-    weboldal: {
+    webpage: {
       type: String,
       trim: true,
       required: false,
@@ -59,10 +59,9 @@ const iskolaSchema = new mongoose.Schema(
         "Kérem, adjon meg egy érvényes weboldal URL-t!",
       ],
     },
-    // In iskola.model.ts, change this:
-    kepzesek: [
+    
+    categories: [
       {
-        // <-- Add the bracket here
         type: mongoose.Schema.Types.ObjectId,
         ref: "Kepzes",
         required: [true, "Iskola képzései kötelező!"],
@@ -80,7 +79,7 @@ const iskolaSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-const Iskola = mongoose.model("Iskola", iskolaSchema, "iskolak");
+const School = mongoose.model("school", schoolSchema, "schools");
 
-export default Iskola;
+export default School;
 

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const oktatoSchema = new mongoose.Schema(
+const instructorSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -50,6 +50,13 @@ const oktatoSchema = new mongoose.Schema(
         required: [true, "Oktató iskolája kötelező!"],
       },
     ],
+    city: {
+      type: String,
+      required: [true, "Oktató városa kötelező!"],
+      trim: true,
+      maxLength: 100,
+      minlength: 2,
+    },
     experience: {
       type: Number,
       required: [true, "Oktató tapasztalata kötelező!"],
@@ -70,8 +77,23 @@ const oktatoSchema = new mongoose.Schema(
         required: false,
       },
     ],
+
+    isVerified: {
+       type: Boolean, default: false 
+      },
+    verificationToken: { 
+      type: String 
+    },
+    
+
+    passwordResetToken: {
+       type: String 
+    },
+    passwordResetExpires: {
+       type: Date 
+    },
   },
   { timestamps: true },
 );
 
-export default mongoose.model("Oktato", oktatoSchema, "oktatok");
+export default mongoose.model("Instructor", instructorSchema, "instructors");

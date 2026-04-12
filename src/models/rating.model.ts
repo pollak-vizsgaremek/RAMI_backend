@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const ertekelesSchema = new mongoose.Schema(
+const ratingSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -49,4 +49,4 @@ const ertekelesSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-export default mongoose.model("Ertekeles", ertekelesSchema);
+export default mongoose.model("Rating", ratingSchema, "ratings");

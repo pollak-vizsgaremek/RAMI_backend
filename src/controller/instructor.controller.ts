@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import Oktato from "../models/oktato.model";
+import Oktato from "../models/instructor.model";
 
 // We import it THIS way so TypeScript is forced to run the file and register the schema,
 // even if we don't directly call "Iskola.find()" in this file!
-import "../models/iskola.model";
+import "../models/school.model";
 
 // GET ALL
-export const getUsers = async (req: Request, res: Response) => {
+export const getInstructors = async (req: Request, res: Response) => {
   try {
     const oktatok = await Oktato.find().populate("schools", "name");
     res.status(200).json(oktatok);
@@ -17,16 +17,16 @@ export const getUsers = async (req: Request, res: Response) => {
 };
 
 // GET BY ID
-export const getUserById = async (req: Request, res: Response) => {
+export const getInstructorById = async (req: Request, res: Response) => {
   try {
-    const user = await Oktato.findById(req.params.id).populate(
+    const instructor = await Oktato.findById(req.params.id).populate(
       "schools",
       "name",
     );
-    if (!user) {
-      return res.status(404).json({ error: "Felhasználó nem található." });
+    if (!instructor) {
+      return res.status(404).json({ error: "Oktató nem található." });
     }
-    res.status(200).json(user);
+    res.status(200).json(instructor);
   } catch (error) {
     res.status(500).json({ error: "Szerver hiba a felhasználó lekérésekor." });
     console.error("Hiba a felhasználó lekérésekor:", error);
@@ -34,15 +34,15 @@ export const getUserById = async (req: Request, res: Response) => {
 };
 
 // UPDATE
-export const updateUser = async (req: Request, res: Response) => {
+export const updateInstructor = async (req: Request, res: Response) => {
   try {
-    const user = await Oktato.findByIdAndUpdate(req.params.id, req.body, {
+    const instructor = await Oktato.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
-    if (!user) {
-      return res.status(404).json({ error: "Felhasználó nem található." });
+    if (!instructor) {
+      return res.status(404).json({ error: "Oktató nem található." });
     }
-    res.status(200).json(user);
+    res.status(200).json(instructor);
   } catch (error) {
     res
       .status(500)
@@ -52,20 +52,20 @@ export const updateUser = async (req: Request, res: Response) => {
 };
 
 // DELETE
-export const deleteUser = async (req: Request, res: Response) => {
+export const deleteInstructor = async (req: Request, res: Response) => {
   try {
-    const user = await Oktato.findByIdAndDelete(req.params.id);
-    if (!user) {
-      return res.status(404).json({ error: "Felhasználó nem található." });
+    const instructor = await Oktato.findByIdAndDelete(req.params.id);
+    if (!instructor) {
+      return res.status(404).json({ error: "Oktató nem található." });
     }
-    res.status(200).json({ message: "Felhasználó sikeresen törölve." });
+    res.status(200).json({ message: "Oktató sikeresen törölve." });
   } catch (error) {
     res.status(500).json({ error: "Szerver hiba a felhasználó törlésekor." });
     console.error("Hiba a felhasználó törlésekor:", error);
   }
 };
 
-// --- SEARCH FUNCTION ---
+// SEARCH FUNCTION 
 export const searchInstructors = async (
   req: Request,
   res: Response,
@@ -81,7 +81,7 @@ export const searchInstructors = async (
       name: { $regex: searchQuery, $options: "i" },
     })
       .select("name schools _id")
-      .populate("schools", "name") // This will now work because Iskola is imported!
+      .populate("schools", "name") 
       .limit(10);
 
     return res.status(200).json(instructors);
