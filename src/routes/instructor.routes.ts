@@ -7,6 +7,7 @@ import {
   getInstructors,
   updateInstructor,
   searchInstructors,
+  
 } from "../controller/instructor.controller";
 
 const instructorRouter = Router();
@@ -22,5 +23,6 @@ instructorRouter.get("/search", searchInstructors);
 instructorRouter.get("/:id", getInstructorById);
 instructorRouter.put("/:id", updateInstructor);
 instructorRouter.delete("/:id", deleteInstructor);
+
 
 export default instructorRouter;

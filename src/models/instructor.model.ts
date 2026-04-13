@@ -77,6 +77,13 @@ const instructorSchema = new mongoose.Schema(
         required: false,
       },
     ],
+    nominated_by: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: false,
+      },
+    ],
 
     isVerified: {
        type: Boolean, default: false 

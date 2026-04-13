@@ -53,3 +53,41 @@ export const deleteUser = async (req: Request, res: Response) => {
     console.error("Hiba a felhasználó törlésekor:", error);
   }
 };
+
+export const nominateInstructor = async (req: Request, res: Response) => {
+  try {
+    const { instructorId } = req.body;
+    const userId = req.params.id;
+
+    if (!instructorId) {
+      return res.status(400).json({ error: "Oktató ID szükséges." });
+    }
+
+    // Import a service-ből
+    const { nominateInstructor: nominateService } = await import(
+      "../service/instructor.service"
+    );
+
+    const updatedInstructor = await nominateService(userId, instructorId);
+
+    res.status(200).json({
+      message: "Sikeresen megjelölted az oktatót.",
+      instructor: updatedInstructor,
+    });
+  } catch (error: any) {
+    console.error("Hiba az oktató megjelölésekor:", error);
+
+    if (
+      error.message.includes("nem található") ||
+      error.message.includes("Már megjelöltél")
+    ) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    res
+      .status(500)
+      .json({ error: "Szerver hiba az oktató megjelölésekor." });
+  }
+};
+
+

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Oktato from "../models/instructor.model";
+import Instructor from "../models/instructor.model";
 
 // We import it THIS way so TypeScript is forced to run the file and register the schema,
 // even if we don't directly call "Iskola.find()" in this file!
@@ -8,7 +8,7 @@ import "../models/school.model";
 // GET ALL
 export const getInstructors = async (req: Request, res: Response) => {
   try {
-    const oktatok = await Oktato.find().populate("schools", "name");
+    const oktatok = await Instructor.find().populate("schools", "name");
     res.status(200).json(oktatok);
   } catch (error) {
     res.status(500).json({ error: "Szerver hiba a felhasználók lekérésekor." });
@@ -19,7 +19,7 @@ export const getInstructors = async (req: Request, res: Response) => {
 // GET BY ID
 export const getInstructorById = async (req: Request, res: Response) => {
   try {
-    const instructor = await Oktato.findById(req.params.id).populate(
+    const instructor = await Instructor.findById(req.params.id).populate(
       "schools",
       "name",
     );
@@ -36,7 +36,7 @@ export const getInstructorById = async (req: Request, res: Response) => {
 // UPDATE
 export const updateInstructor = async (req: Request, res: Response) => {
   try {
-    const instructor = await Oktato.findByIdAndUpdate(req.params.id, req.body, {
+    const instructor = await Instructor.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
     if (!instructor) {
@@ -54,7 +54,7 @@ export const updateInstructor = async (req: Request, res: Response) => {
 // DELETE
 export const deleteInstructor = async (req: Request, res: Response) => {
   try {
-    const instructor = await Oktato.findByIdAndDelete(req.params.id);
+    const instructor = await Instructor.findByIdAndDelete(req.params.id);
     if (!instructor) {
       return res.status(404).json({ error: "Oktató nem található." });
     }
@@ -77,7 +77,7 @@ export const searchInstructors = async (
       return res.status(200).json([]);
     }
 
-    const instructors = await Oktato.find({
+    const instructors = await Instructor.find({
       name: { $regex: searchQuery, $options: "i" },
     })
       .select("name schools _id")
