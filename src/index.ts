@@ -39,3 +39,5 @@ const expressServer = app.listen(PORT, async () => {
 
   await connectDatabase();
 });
+
+export default app;

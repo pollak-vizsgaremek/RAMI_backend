@@ -22,12 +22,14 @@
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "generate-api-key": "^1.0.2",
+    "jest": "^30.3.0",
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.0.0",
     "mongoose": "^9.2.3",
     "node-cron": "^4.2.1",
     "nodemailer": "^8.0.4",
     "resend": "^6.10.0",
+    "supertest": "^7.2.2",
     "swagger-ui-express": "^5.0.1"
   },
   "name": "rami_backend",
@@ -35,7 +37,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "dev": "tsx watch src/index.ts"
   },
   "keywords": [],
