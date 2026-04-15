@@ -2,6 +2,7 @@
 import e from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import mongoose from "mongoose";
 
 //-- Routes imports
 import userRouter from "./routes/user.routes";
@@ -34,10 +35,48 @@ app.use("/api/v1/school", schoolRouter);
 app.use("/api/v1/instructor", instructorRouter);
 app.use("/api/v1/auth", authRouter);
 
-const expressServer = app.listen(PORT, async () => {
-  console.log(`App started at http://localhost:${PORT}`);
+let expressServer: any = null;
+let isConnected = false;
 
-  await connectDatabase();
-});
+export const startServer = async () => {
+  if (!expressServer) {
+    if (!isConnected) {
+      await connectDatabase();
+      isConnected = true;
+    }
+    return new Promise((resolve) => {
+      expressServer = app.listen(PORT, () => {
+        console.log(`App started at http://localhost:${PORT}`);
+        resolve(expressServer);
+      });
+    });
+  }
+  return expressServer;
+};
+
+export const closeServer = async () => {
+  if (expressServer) {
+    return new Promise<void>((resolve, reject) => {
+      expressServer.close(async (err: any) => {
+        if (err) reject(err);
+        try {
+          expressServer = null;
+          if (isConnected && mongoose.connection.readyState !== 0) {
+            await mongoose.disconnect();
+            isConnected = false;
+          }
+          resolve();
+        } catch (error) {
+          reject(error);
+        }
+      });
+    });
+  }
+};
+
+// Only start server if not in test environment
+if (process.env.NODE_ENV !== "test") {
+  startServer().catch(console.error);
+}
 
 export default app;

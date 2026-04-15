@@ -59,7 +59,7 @@ const schoolSchema = new mongoose.Schema(
         "Kérem, adjon meg egy érvényes weboldal URL-t!",
       ],
     },
-    
+
     categories: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -79,7 +79,6 @@ const schoolSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-const School = mongoose.model("school", schoolSchema, "schools");
+const School = mongoose.model("Iskola", schoolSchema, "schools");
 
 export default School;
-
