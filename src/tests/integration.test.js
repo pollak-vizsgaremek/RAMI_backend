@@ -8,16 +8,22 @@ describe("Integration & Error Handling Tests", () => {
   let adminUserId;
 
   beforeAll(async () => {
-    const loginResponse = await request(app).post("/api/v1/auth/login").send({
-      email: "admin@localhost.local",
-      password: "admin123",
-    });
+    try {
+      const loginResponse = await request(app).post("/api/v1/auth/login").send({
+        email: "admin@localhost.local",
+        password: "admin123",
+      });
 
-    if (loginResponse.status === 200) {
-      authToken = loginResponse.body.token;
-      adminUserId = loginResponse.body.user?._id;
+      if (loginResponse.status === 200) {
+        authToken = loginResponse.body.token;
+        adminUserId = loginResponse.body.user?._id;
+      } else {
+        console.warn("Login failed with status:", loginResponse.status);
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
     }
-  });
+  }, 30000);
 
   describe("Error Handling & Edge Cases", () => {
     test("should return proper error for malformed ObjectId", async () => {

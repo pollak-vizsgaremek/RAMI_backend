@@ -4,15 +4,16 @@ import dotenv from "dotenv";
 import cors from "cors";
 import mongoose from "mongoose";
 
-//-- Routes imports
-import userRouter from "./routes/user.routes";
-import reviewRouter from "./routes/review.routes";
-import schoolRouter from "./routes/school.routes";
-import instructorRouter from "./routes/instructor.routes";
-import authRouter from "./routes/auth.routes";
+//-- API Routes imports
+import userRouter from "./api/routes/user.routes";
+import reviewRouter from "./api/routes/review.routes";
+import schoolRouter from "./api/routes/school.routes";
+import instructorRouter from "./api/routes/instructor.routes";
+import authRouter from "./api/routes/auth.routes";
+import adminRouter from "./api/routes/admin.routes";
 
 //-- Database connection import for checking connection
-import { connectDatabase } from "./database/mongodb";
+import { connectDatabase } from "./core/database/mongodb";
 
 //-- dotenv config
 dotenv.config();
@@ -28,12 +29,13 @@ app.use(
 );
 app.use(e.json());
 
-//app.use("/api/v1/licencePlate", apiKeyMiddleware, licencePlateController);
+//-- API Routes
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/review", reviewRouter);
 app.use("/api/v1/school", schoolRouter);
 app.use("/api/v1/instructor", instructorRouter);
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/admin", adminRouter);
 
 let expressServer: any = null;
 let isConnected = false;

@@ -1,8 +1,11 @@
+// Load environment variables first
+require("dotenv").config();
+
 // Set NODE_ENV to test before running tests
 process.env.NODE_ENV = "test";
 
-// Increase Jest timeout for database operations
-jest.setTimeout(10000);
+// Increase Jest timeout for database operations (30 seconds for connection timeout)
+jest.setTimeout(30000);
 
 // Lazy load and setup server
 let setupPromise = null;
@@ -16,11 +19,12 @@ beforeAll(async () => {
         await startServer();
       } catch (error) {
         console.error("Failed to start server:", error);
+        throw error;
       }
     })();
   }
   await setupPromise;
-});
+}, 35000);
 
 // Cleanup after all tests - just let forceExit handle it
 afterAll(async () => {
