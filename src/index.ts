@@ -23,7 +23,8 @@ const app = e();
 //-- Cors settings
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    // Updated to accept both 5173 and 5174
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true,
   }),
 );

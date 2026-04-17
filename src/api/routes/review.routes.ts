@@ -14,15 +14,16 @@ import {
 
 const reviewRouter = Router();
 
-// Your original routes
+// Get all reviews
 reviewRouter.get("/", getReviews);
-reviewRouter.post("/newreview", createReview);
-reviewRouter.delete("/:id", deleteReview);
 
-// The new routes for the profile pages
+// Specific routes (must come BEFORE parameter routes /:id)
+reviewRouter.post("/create", createReview);
 reviewRouter.get("/instructor/:id", getInstructorReviews);
 reviewRouter.get("/user/:userId", getMyReviews);
 
+// Parameter-based routes (must come AFTER specific routes)
 reviewRouter.put("/:id/helpful", toggleHelpfulReview);
+reviewRouter.delete("/:id", deleteReview);
 
 export default reviewRouter;

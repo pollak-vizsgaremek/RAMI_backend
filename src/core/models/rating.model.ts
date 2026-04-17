@@ -15,34 +15,29 @@ const ratingSchema = new mongoose.Schema(
       index: true,
     },
 
-    rating: [
-      {
-        patience: {
-          type: Number,
-          required: [true, "Értékelés kötelező!"],
-          min: [1, "Minimum értékelés 1!"],
-          max: [10, "Maximum értékelés 10!"],
-        },
-        teachingquality: {
-          type: Number,
-          required: [true, "Értékelés kötelező!"],
-          min: [1, "Minimum értékelés 1!"],
-          max: [10, "Maximum értékelés 10!"],
-        },
-        clarity: {
-          type: Number,
-          required: [true, "Értékelés kötelező!"],
-          min: [1, "Minimum értékelés 1!"],
-          max: [10, "Maximum értékelés 10!"],
-        },
-        review: {
-          type: String,
-          trim: true,
-          maxlength: [200, "Maximális hossz 200 karakter!"],
-        },
-      },
-    ],
-    // Add these two lines to your existing schema!
+    // A kiszámolt átlagos értékelés, amit az Admin panel is használ
+    rating: {
+      type: Number,
+      required: [true, "Értékelés (átlag) kötelező!"],
+      min: [1, "Minimum értékelés 1!"],
+      max: [10, "Maximum értékelés 10!"],
+    },
+
+    // Szöveges értékelés (tapasztalat)
+    comment: {
+      type: String,
+      trim: true,
+      maxlength: [1000, "Maximális hossz 1000 karakter!"],
+    },
+
+    // Részletes pontszámok elmentése (későbbi profil statisztikákhoz)
+    details: {
+      turelem: { type: Number, min: 1, max: 10 },
+      szaktudas: { type: Number, min: 1, max: 10 },
+      kommunikacio: { type: Number, min: 1, max: 10 },
+      rugalmasag: { type: Number, min: 1, max: 10 },
+    },
+
     helpfulCount: { type: Number, default: 0 },
     helpfulUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     approvalStatus: {

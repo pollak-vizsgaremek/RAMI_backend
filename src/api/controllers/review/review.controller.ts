@@ -17,14 +17,26 @@ export const getReviews = async (req: Request, res: Response) => {
 
 export const createReview = async (req: Request, res: Response) => {
   try {
-    const { user, instructor, rating } = req.body;
-    const newReview = await Review.create({ user, instructor, rating });
+    // Kinyerjük az új adatstruktúrát a kérésből
+    const { user, instructor, rating, comment, details } = req.body;
+
+    // Létrehozzuk az értékelést
+    const newReview = await Review.create({
+      user,
+      instructor,
+      rating,
+      comment,
+      details, // Eltároljuk a 4 kategória pontjait is
+    });
+
     res.status(201).json(newReview);
-  } catch (error) {
-    console.error("Hiba az értékelés létrehozásakor:", error);
+  } catch (error: any) {
+    console.error("Hiba az értékelés létrehozásakor:", error.message || error);
     res
       .status(500)
-      .json({ error: "Szerver hiba az értékelés létrehozásakor." });
+      .json({
+        error: error.message || "Szerver hiba az értékelés létrehozásakor.",
+      });
   }
 };
 
