@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import User from "../../../core/models/user.model";
 import Instructor from "../../../core/models/instructor.model";
+import InstructorRequest from "../../../core/models/instructorRequest.model";
 import Rating from "../../../core/models/rating.model";
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -174,14 +175,34 @@ export const getAllInstructors = async (req: Request, res: Response) => {
     const instructors = await Instructor.find(filter)
       .populate("schools", "name")
       .populate("categories", "name")
+      .populate("nominated_by", "name email")
       .limit(Number(limit))
       .skip(skip)
       .sort({ createdAt: -1 });
 
     const total = await Instructor.countDocuments(filter);
 
+    // Attach nomination logs for these instructors
+    const instructorIds = instructors.map((i) => i._id);
+    const requests = await InstructorRequest.find({ instructor: { $in: instructorIds } })
+      .populate('user', 'name email')
+      .sort({ createdAt: -1 });
+
+    const requestsByInstructor: Record<string, any[]> = {};
+    requests.forEach((r) => {
+      const key = r.instructor.toString();
+      if (!requestsByInstructor[key]) requestsByInstructor[key] = [];
+      requestsByInstructor[key].push(r);
+    });
+
+    const data = instructors.map((ins) => {
+      const obj: any = ins.toObject();
+      obj.requests = requestsByInstructor[ins._id.toString()] || [];
+      return obj;
+    });
+
     res.status(200).json({
-      data: instructors,
+      data,
       pagination: {
         total,
         page: Number(page),

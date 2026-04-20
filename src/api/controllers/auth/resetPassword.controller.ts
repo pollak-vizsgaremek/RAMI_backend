@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import User from "../../../core/models/user.model";
+import PasswordResetLog from "../../../core/models/passwordResetLog.model";
 
 export const resetPassword = async (
   req: Request,
@@ -25,6 +26,7 @@ export const resetPassword = async (
     });
 
     if (!user) {
+      await PasswordResetLog.create({ email: '', event: 'token_invalid', ip: req.ip || '', userAgent: req.get('User-Agent') || '', status: 'invalid' });
       return res
         .status(400)
         .json({ message: "A token érvénytelen vagy lejárt!" });
@@ -40,6 +42,8 @@ export const resetPassword = async (
 
     // 6. Save the updated user to the database
     await user.save();
+
+    await PasswordResetLog.create({ email: user.email, event: 'password_reset_success', ip: req.ip || '', userAgent: req.get('User-Agent') || '', status: 'success' });
 
     return res.status(200).json({
       message: "A jelszó sikeresen frissítve! Most már bejelentkezhetsz.",

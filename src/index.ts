@@ -11,6 +11,7 @@ import schoolRouter from "./api/routes/school.routes";
 import instructorRouter from "./api/routes/instructor.routes";
 import authRouter from "./api/routes/auth.routes";
 import adminRouter from "./api/routes/admin.routes";
+import categoriesRouter from "./api/routes/categories.routes";
 
 //-- Database connection import for checking connection
 import { connectDatabase } from "./core/database/mongodb";
@@ -37,6 +38,7 @@ app.use("/api/v1/school", schoolRouter);
 app.use("/api/v1/instructor", instructorRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/categories", categoriesRouter);
 
 let expressServer: any = null;
 let isConnected = false;

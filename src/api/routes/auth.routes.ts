@@ -14,6 +14,7 @@ import {
 import { login } from "../controllers/auth/login.controller";
 import { forgotPassword } from "../controllers/auth/forgotPassword.controller";
 import { resetPassword } from "../controllers/auth/resetPassword.controller";
+import { authIpRateLimiter } from "../middleware/rateLimit.middleware";
 import { verifyAdminToken } from "../middleware/admin.middleware";
 
 const router = Router();
@@ -22,8 +23,8 @@ const router = Router();
 router.post("/register", register);
 router.get("/verify/:token", verifyEmail);
 router.post("/login", login);
-router.post("/forgot-password", forgotPassword);
-router.post("/reset-password", resetPassword);
+router.post("/forgot-password", authIpRateLimiter, forgotPassword);
+router.post("/reset-password", authIpRateLimiter, resetPassword);
 router.post("/register-instructor", registerInstructor);
 
 // Admin registration routes

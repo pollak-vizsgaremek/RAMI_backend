@@ -7,7 +7,11 @@ dotenv.config();
 interface SendEmailOptions {
   email: string;
   subject: string;
-  message: string;
+  // Backwards-compatible: `message` is accepted as plain text
+  message?: string;
+  // Prefer explicit `text` and `html` when available
+  text?: string;
+  html?: string;
 }
 
 const transporter: Transporter = nodemailer.createTransport({
@@ -24,13 +28,16 @@ const transporter: Transporter = nodemailer.createTransport({
  * A vezérlődben használt sendEmail függvény implementációja
  */
 export const sendEmail = async (options: SendEmailOptions): Promise<void> => {
+  // Prefer explicit `text` and `html`. Fall back to `message` for compatibility.
+  const htmlBody = options.html || (options.message ? options.message.replace(/\n/g, '<br>') : undefined);
+  const textBody = options.text || options.message || (htmlBody ? htmlBody.replace(/<[^>]*>/g, '') : undefined);
+
   const mailOptions = {
     from: process.env.EMAIL_FROM || '"Rate My Instructor" <noreply@sajatdomained.hu>',
     to: options.email,
     subject: options.subject,
-    text: options.message, // A vezérlődben generált szöveges üzenet
-    // Opcionálisan hozzáadhatsz HTML-t is, ha szebbé akarod tenni:
-    html: options.message.replace(/\n/g, '<br>'), 
+    text: textBody,
+    html: htmlBody,
   };
 
   await transporter.sendMail(mailOptions);

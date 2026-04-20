@@ -66,7 +66,7 @@ const instructorSchema = new mongoose.Schema(
     categories: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Kategoriak",
+        ref: "Category",
         required: [true, "Oktató kategóriája kötelező!"],
       },
     ],

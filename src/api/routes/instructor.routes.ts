@@ -7,6 +7,8 @@ import {
   getInstructors,
   updateInstructor,
   searchInstructors,
+  nominateInstructor,
+  acceptStudent,
   
 } from "../controllers/instructor/instructor.controller";
 
@@ -23,6 +25,8 @@ instructorRouter.get("/search", searchInstructors);
 instructorRouter.get("/:id", getInstructorById);
 instructorRouter.put("/:id", updateInstructor);
 instructorRouter.delete("/:id", deleteInstructor);
+instructorRouter.post('/:id/nominate', nominateInstructor);
+instructorRouter.post('/:id/accept-student', acceptStudent);
 
 
 export default instructorRouter;
