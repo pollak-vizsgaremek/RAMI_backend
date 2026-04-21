@@ -89,4 +89,24 @@ export const nominateInstructor = async (req: Request, res: Response) => {
   }
 };
 
+export const getUserInstructors = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(req.params.id).populate({
+      path: "instructors",
+      select: "name email phoneNumber city experience isVerified approvalStatus",
+      populate: { path: "schools", select: "name" },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "Felhasználó nem található." });
+    }
+
+    const instructors = user.instructors || [];
+    return res.status(200).json(instructors);
+  } catch (error) {
+    console.error("Hiba az oktatók lekérésekor:", error);
+    return res.status(500).json({ error: "Szerver hiba az oktatók lekérésekor." });
+  }
+};
+
 

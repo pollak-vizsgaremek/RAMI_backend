@@ -71,7 +71,7 @@ const schoolSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Oktato",
-        required: [true, "Legalább egy oktató megadása kötelező!"],
+        required: false,
         index: true,
       },
     ],
