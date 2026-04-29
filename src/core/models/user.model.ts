@@ -67,6 +67,17 @@ const userSchema = new mongoose.Schema(
       ref: "Instructor",
       required: false,
     },
+    managedSchool: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Iskola",
+      required: false,
+      default: null,
+    },
+    profileImage: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   { timestamps: true },
 );

@@ -41,6 +41,7 @@ export const loginInstructor = async (req: Request, res: Response): Promise<any>
         email: instructor.email,
         role: "instructor",
         instructorId: instructor._id,
+        profileImage: instructor.profileImage,
       },
     });
   } catch (error) {

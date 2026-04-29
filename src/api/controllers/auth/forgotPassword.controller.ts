@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import crypto from "crypto";
 import User from "../../../core/models/user.model";
+import Instructor from "../../../core/models/instructor.model";
 import PasswordResetLog from "../../../core/models/passwordResetLog.model";
 import { sendEmail } from "../../../core/services/sendEmail.service";
 import * as dotenv from "dotenv";
@@ -35,9 +36,15 @@ export const forgotPassword = async (
 
     await PasswordResetLog.create({ email, event: 'forgot_request', ip, userAgent, status: 'received' });
 
-    const user = await User.findOne({ email });
+    // Search both User and Instructor collections
+    let account: any = await User.findOne({ email });
+    let isInstructor = false;
+    if (!account) {
+      account = await Instructor.findOne({ email });
+      isInstructor = true;
+    }
 
-    if (!user) {
+    if (!account) {
       // Do not reveal whether the user exists. We've already logged the request.
       return res
         .status(200)
@@ -46,14 +53,14 @@ export const forgotPassword = async (
 
     const resetToken = crypto.randomBytes(32).toString("hex");
 
-    user.passwordResetToken = crypto
+    account.passwordResetToken = crypto
       .createHash("sha256")
       .update(resetToken)
       .digest("hex");
 
     const expireMinutes = parseInt(process.env.RESET_TOKEN_EXPIRE_MINUTES || "60", 10);
-    user.passwordResetExpires = new Date(Date.now() + expireMinutes * 60 * 1000);
-    await user.save();
+    account.passwordResetExpires = new Date(Date.now() + expireMinutes * 60 * 1000);
+    await account.save();
 
     const appUrl = process.env.APP_URL || "http://localhost:3000";
     const resetUrl = `${appUrl.replace(/\/$/, "")}/reset-password?token=${resetToken}`;
@@ -70,18 +77,18 @@ export const forgotPassword = async (
 
     try {
       await sendEmail({
-        email: user.email,
+        email: account.email,
         subject: "Jelszó visszaállítás",
         text: textMessage,
         html: htmlMessage,
       });
-      await PasswordResetLog.create({ email: user.email, event: 'email_sent', ip, userAgent, status: 'success' });
+      await PasswordResetLog.create({ email: account.email, event: 'email_sent', ip, userAgent, status: 'success' });
       return res.status(200).json({ message: "E-mail elküldve!" });
     } catch (emailError) {
-      user.passwordResetToken = undefined;
-      user.passwordResetExpires = undefined;
-      await user.save();
-      await PasswordResetLog.create({ email: user.email, event: 'email_failed', ip, userAgent, status: 'failed', note: String(emailError) });
+      account.passwordResetToken = undefined;
+      account.passwordResetExpires = undefined;
+      await account.save();
+      await PasswordResetLog.create({ email: account.email, event: 'email_failed', ip, userAgent, status: 'failed', note: String(emailError) });
       return res.status(500).json({ message: "Hiba az e-mail küldésekor." });
     }
   } catch (error) {

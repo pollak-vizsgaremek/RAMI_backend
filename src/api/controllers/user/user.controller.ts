@@ -109,4 +109,37 @@ export const getUserInstructors = async (req: Request, res: Response) => {
   }
 };
 
+export const uploadUserProfileImage = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { id } = req.params;
+    const { profileImage } = req.body;
+
+    if (!profileImage) {
+      return res.status(400).json({ error: "Kép adatai kötelezők!" });
+    }
+
+    // Max ~2MB base64 check (~2MB * 1.37 base64 overhead = ~2.7MB string)
+    const sizeInBytes = Buffer.byteLength(profileImage, "utf8");
+    if (sizeInBytes > 2_800_000) {
+      return res.status(400).json({ error: "A kép mérete maximum 2MB lehet!" });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      id,
+      { profileImage },
+      { new: true, select: "profileImage name email" }
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: "Felhasználó nem található." });
+    }
+
+    return res.status(200).json({ message: "Profilkép sikeresen feltöltve!", profileImage: user.profileImage });
+  } catch (error) {
+    console.error("Hiba a profilkép feltöltésekor:", error);
+    return res.status(500).json({ error: "Szerver hiba a profilkép feltöltésekor." });
+  }
+};
+
+
 

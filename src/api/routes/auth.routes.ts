@@ -20,7 +20,6 @@ import { verifyAdminToken } from "../middleware/admin.middleware";
 
 const router = Router();
 
-// Regular auth routes
 router.post("/register", register);
 router.get("/verify/:token", verifyEmail);
 router.post("/login", login);
@@ -29,7 +28,6 @@ router.post("/forgot-password", authIpRateLimiter, forgotPassword);
 router.post("/reset-password", authIpRateLimiter, resetPassword);
 router.post("/register-instructor", registerInstructor);
 
-// Admin registration routes
 router.post("/admin/register", registerAdmin);
 router.get("/admin/validate-code/:code", validateRegistrationCode);
 router.post(

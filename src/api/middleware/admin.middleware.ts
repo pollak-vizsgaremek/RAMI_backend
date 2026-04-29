@@ -22,7 +22,6 @@ export const verifyAdminToken = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    // Get token from header
     const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) {
@@ -35,13 +34,11 @@ export const verifyAdminToken = async (
       return;
     }
 
-    // Verify token
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET as string,
     ) as DecodedToken;
 
-    // Get user from database
     const user = await User.findById(decoded.userId);
 
     if (!user) {
@@ -49,7 +46,6 @@ export const verifyAdminToken = async (
       return;
     }
 
-    // Check if user is admin (has "creator", "admin", or "moderator" role)
     if (!["creator", "admin", "moderator"].includes(user.role)) {
       res.status(403).json({
         error: "Hozzáférés megtagadva - Admin jogosultság szükséges",
@@ -57,7 +53,6 @@ export const verifyAdminToken = async (
       return;
     }
 
-    // Attach user to request
     req.user = user;
     next();
   } catch (error) {

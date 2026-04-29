@@ -53,7 +53,7 @@ const schoolSchema = new mongoose.Schema(
       required: false,
       lowercase: true,
       maxLength: 100,
-      minlength: 6,
+      minlength: 0,
       match: [
         /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w-]*)*\/?$/,
         "Kérem, adjon meg egy érvényes weboldal URL-t!",
@@ -63,14 +63,14 @@ const schoolSchema = new mongoose.Schema(
     categories: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Kepzes",
+        ref: "Category",
         required: [true, "Iskola képzései kötelező!"],
       },
     ],
     instructors: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Oktato",
+        ref: "Instructor",
         required: false,
         index: true,
       },

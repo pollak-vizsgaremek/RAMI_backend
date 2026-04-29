@@ -117,6 +117,11 @@ const instructorSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    profileImage: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   { timestamps: true },
 );

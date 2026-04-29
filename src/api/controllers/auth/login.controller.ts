@@ -49,6 +49,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
         name: user.name,
         email: user.email,
         role: user.role || "user",
+        profileImage: user.profileImage,
       }, // Ensure user obj is sent!
     });
   } catch (error) {

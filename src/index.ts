@@ -1,10 +1,8 @@
-// Server imports
-import e from "express";
+import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import mongoose from "mongoose";
 
-//-- API Routes imports
 import userRouter from "./api/routes/user.routes";
 import reviewRouter from "./api/routes/review.routes";
 import schoolRouter from "./api/routes/school.routes";
@@ -14,28 +12,34 @@ import adminRouter from "./api/routes/admin.routes";
 import categoriesRouter from "./api/routes/categories.routes";
 import reportRouter from "./api/routes/report.routes";
 
-//-- Database connection import for checking connection
 import { connectDatabase } from "./core/database/mongodb";
 
-//-- Cron service for recalculating ratings
 import { recalculateAllRatings } from "./core/services/ratingCron.service";
 
-//-- dotenv config
 dotenv.config();
 const PORT = process.env.PORT;
-const app = e();
+const app = express();
 
-//-- Cors settings
 app.use(
   cors({
-    // Updated to accept both 5173 and 5174
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://100.102.77.3:5173",
+      ];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );
-app.use(e.json());
+app.use(express.json({ limit: "5mb" }));
+app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 
-//-- API Routes
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/review", reviewRouter);
 app.use("/api/v1/school", schoolRouter);
@@ -58,7 +62,6 @@ export const startServer = async () => {
       expressServer = app.listen(PORT, () => {
         console.log(`App started at http://localhost:${PORT}`);
 
-        // Run rating recalculation once on startup, then every hour
         recalculateAllRatings();
         setInterval(recalculateAllRatings, 60 * 60 * 1000);
 
@@ -89,7 +92,6 @@ export const closeServer = async () => {
   }
 };
 
-// Only start server if not in test environment
 if (process.env.NODE_ENV !== "test") {
   startServer().catch(console.error);
 }

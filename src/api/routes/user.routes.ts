@@ -8,6 +8,7 @@ import {
   updateUser,
   nominateInstructor,
   getUserInstructors,
+  uploadUserProfileImage,
 } from "../controllers/user/user.controller";
 
 const userRouter = Router();
@@ -23,5 +24,6 @@ userRouter.post(
   errorMiddleware,
   nominateInstructor,
 );
+userRouter.post("/:id/profile-image", authorize, errorMiddleware, uploadUserProfileImage);
 
 export default userRouter;

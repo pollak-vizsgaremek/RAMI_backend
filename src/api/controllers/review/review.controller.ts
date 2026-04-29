@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
-import Review from "../../../core/models/rating.model"; // Your exact model import
-
-// --- ORIGINAL FUNCTIONS ---
+import Review from "../../../core/models/rating.model";
 
 export const getReviews = async (req: Request, res: Response) => {
   try {
@@ -19,6 +17,14 @@ export const createReview = async (req: Request, res: Response) => {
   try {
     // Kinyerjük az új adatstruktúrát a kérésből
     const { user, instructor, rating, comment, details } = req.body;
+
+    // Ellenőrzés: max 2 értékelés egy oktatóhoz egy felhasználótól
+    const existingCount = await Review.countDocuments({ user, instructor });
+    if (existingCount >= 2) {
+      return res.status(400).json({
+        error: "Egy oktatóhoz maximum 2 értékelést írhatsz!",
+      });
+    }
 
     // Létrehozzuk az értékelést
     const newReview = await Review.create({
@@ -53,12 +59,9 @@ export const deleteReview = async (req: Request, res: Response) => {
   }
 };
 
-// --- NEW FUNCTIONS FOR THE PROFILE PAGES ---
-
 export const getInstructorReviews = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    // Populate the user so we can display the name of the student who wrote it
     const reviews = await Review.find({ instructor: id }).populate(
       "user",
       "name",
@@ -90,23 +93,20 @@ export const toggleHelpfulReview = async (
 ) => {
   try {
     const reviewId = req.params.id;
-    const { userId } = req.body; // We will send this from React
+    const { userId } = req.body;
 
     const review = await Review.findById(reviewId);
     if (!review)
       return res.status(404).json({ error: "Értékelés nem található." });
 
-    // Check if user already liked it
     const hasLiked = review.helpfulUsers.includes(userId);
 
     if (hasLiked) {
-      // Remove the like
       review.helpfulUsers = review.helpfulUsers.filter(
         (id: any) => id.toString() !== userId.toString(),
       );
       review.helpfulCount -= 1;
     } else {
-      // Add the like
       review.helpfulUsers.push(userId);
       review.helpfulCount += 1;
     }

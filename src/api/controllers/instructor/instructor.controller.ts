@@ -3,11 +3,8 @@ import Instructor from "../../../core/models/instructor.model";
 import User from "../../../core/models/user.model";
 import InstructorRequest from "../../../core/models/instructorRequest.model";
 
-// We import it THIS way so TypeScript is forced to run the file and register the schema,
-// even if we don't directly call "Iskola.find()" in this file!
 import "../../../core/models/school.model";
 
-// GET ALL
 export const getInstructors = async (req: Request, res: Response) => {
   try {
     const oktatok = await Instructor.find().populate("schools", "name");
@@ -18,7 +15,22 @@ export const getInstructors = async (req: Request, res: Response) => {
   }
 };
 
-// POST /instructors/:id/nominate
+export const getCitiesWithInstructorsCount = async (req: Request, res: Response) => {
+  try {
+    const citiesCount = await Instructor.aggregate([
+      { $match: { city: { $exists: true, $ne: "" } } },
+      { $group: { _id: "$city", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 3 },
+      { $project: { _id: 0, name: "$_id", count: 1 } }
+    ]);
+    res.status(200).json(citiesCount);
+  } catch (error) {
+    res.status(500).json({ error: "Hiba a városok aggregációjakor." });
+    console.error("Hiba a városok aggregációjakor:", error);
+  }
+};
+
 export const nominateInstructor = async (req: Request, res: Response) => {
   try {
     const instructorId = req.params.id;
@@ -34,7 +46,6 @@ export const nominateInstructor = async (req: Request, res: Response) => {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ error: 'Felhasználó nem található.' });
 
-    // Add to nominated_by if not already present
     if (!instructor.nominated_by) instructor.nominated_by = [];
     const already = instructor.nominated_by.find((id: any) => id.toString() === userId.toString());
     if (!already) {
@@ -51,7 +62,6 @@ export const nominateInstructor = async (req: Request, res: Response) => {
   }
 };
 
-// POST /instructors/:id/accept-student
 export const acceptStudent = async (req: Request, res: Response) => {
   try {
     const instructorId = req.params.id;
@@ -65,21 +75,18 @@ export const acceptStudent = async (req: Request, res: Response) => {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ error: 'Felhasználó nem található.' });
 
-    // Add to instructor.students
     if (!instructor.students) instructor.students = [];
     const alreadyStudent = instructor.students.find((id: any) => id.toString() === userId.toString());
     if (!alreadyStudent) {
       instructor.students.push(user._id);
     }
 
-    // Remove from nominated_by if present
     if (instructor.nominated_by && instructor.nominated_by.length) {
       instructor.nominated_by = instructor.nominated_by.filter((id: any) => id.toString() !== userId.toString());
     }
 
     await instructor.save();
 
-    // Add instructor to user's instructors array
     if (!user.instructors) user.instructors = [];
     const alreadyLinked = user.instructors.find((id: any) => id.toString() === instructorId.toString());
     if (!alreadyLinked) {
@@ -96,7 +103,6 @@ export const acceptStudent = async (req: Request, res: Response) => {
   }
 };
 
-// GET /instructor/:id/nomination-status/:userId
 export const checkNominationStatus = async (req: Request, res: Response) => {
   try {
     const { id, userId } = req.params;
@@ -124,7 +130,6 @@ export const checkNominationStatus = async (req: Request, res: Response) => {
   }
 };
 
-// GET /instructor/:id/my-students
 export const getMyStudents = async (req: Request, res: Response) => {
   try {
     const instructorId = req.params.id;
@@ -147,7 +152,6 @@ export const getMyStudents = async (req: Request, res: Response) => {
   }
 };
 
-// POST /instructor/:id/reject-student
 export const rejectStudent = async (req: Request, res: Response) => {
   try {
     const instructorId = req.params.id;
@@ -158,7 +162,6 @@ export const rejectStudent = async (req: Request, res: Response) => {
     const instructor = await Instructor.findById(instructorId);
     if (!instructor) return res.status(404).json({ error: 'Oktató nem található.' });
 
-    // Remove from nominated_by
     if (instructor.nominated_by && instructor.nominated_by.length) {
       instructor.nominated_by = instructor.nominated_by.filter(
         (id: any) => id.toString() !== userId.toString()
@@ -181,7 +184,6 @@ export const rejectStudent = async (req: Request, res: Response) => {
   }
 };
 
-// GET BY ID
 export const getInstructorById = async (req: Request, res: Response) => {
   try {
     const instructor = await Instructor.findById(req.params.id).populate(
@@ -198,7 +200,6 @@ export const getInstructorById = async (req: Request, res: Response) => {
   }
 };
 
-// UPDATE
 export const updateInstructor = async (req: Request, res: Response) => {
   try {
     const instructor = await Instructor.findByIdAndUpdate(req.params.id, req.body, {
@@ -216,7 +217,6 @@ export const updateInstructor = async (req: Request, res: Response) => {
   }
 };
 
-// DELETE
 export const deleteInstructor = async (req: Request, res: Response) => {
   try {
     const instructor = await Instructor.findByIdAndDelete(req.params.id);
@@ -230,7 +230,6 @@ export const deleteInstructor = async (req: Request, res: Response) => {
   }
 };
 
-// SEARCH FUNCTION 
 export const searchInstructors = async (
   req: Request,
   res: Response,
@@ -245,7 +244,7 @@ export const searchInstructors = async (
     const instructors = await Instructor.find({
       name: { $regex: searchQuery, $options: "i" },
     })
-      .select("name schools _id")
+      .select("name schools _id profileImage")
       .populate("schools", "name")
       .limit(10);
 
@@ -255,3 +254,35 @@ export const searchInstructors = async (
     console.error("Hiba az oktatók keresésekor:", error);
   }
 };
+
+export const uploadInstructorProfileImage = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { id } = req.params;
+    const { profileImage } = req.body;
+
+    if (!profileImage) {
+      return res.status(400).json({ error: "Kép adatai kötelezők!" });
+    }
+
+    const sizeInBytes = Buffer.byteLength(profileImage, "utf8");
+    if (sizeInBytes > 2_800_000) {
+      return res.status(400).json({ error: "A kép mérete maximum 2MB lehet!" });
+    }
+
+    const instructor = await Instructor.findByIdAndUpdate(
+      id,
+      { profileImage },
+      { new: true, select: "profileImage name email" }
+    );
+
+    if (!instructor) {
+      return res.status(404).json({ error: "Oktató nem található." });
+    }
+
+    return res.status(200).json({ message: "Profilkép sikeresen feltöltve!", profileImage: instructor.profileImage });
+  } catch (error) {
+    console.error("Hiba a profilkép feltöltésekor:", error);
+    return res.status(500).json({ error: "Szerver hiba a profilkép feltöltésekor." });
+  }
+};
+
