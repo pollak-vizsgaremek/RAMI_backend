@@ -64,7 +64,7 @@ const userSchema = new mongoose.Schema(
 
     instructors: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: "Oktato",
+      ref: "Instructor",
       required: false,
     },
   },

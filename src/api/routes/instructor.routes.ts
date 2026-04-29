@@ -9,6 +9,9 @@ import {
   searchInstructors,
   nominateInstructor,
   acceptStudent,
+  getMyStudents,
+  rejectStudent,
+  checkNominationStatus,
   
 } from "../controllers/instructor/instructor.controller";
 
@@ -27,6 +30,9 @@ instructorRouter.put("/:id", updateInstructor);
 instructorRouter.delete("/:id", deleteInstructor);
 instructorRouter.post('/:id/nominate', nominateInstructor);
 instructorRouter.post('/:id/accept-student', acceptStudent);
+instructorRouter.get('/:id/my-students', getMyStudents);
+instructorRouter.get('/:id/nomination-status/:userId', checkNominationStatus);
+instructorRouter.post('/:id/reject-student', rejectStudent);
 
 
 export default instructorRouter;

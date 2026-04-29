@@ -3,6 +3,7 @@ import User from "../../../core/models/user.model";
 import Instructor from "../../../core/models/instructor.model";
 import InstructorRequest from "../../../core/models/instructorRequest.model";
 import Rating from "../../../core/models/rating.model";
+import Report from "../../../core/models/report.model";
 
 // ═════════════════════════════════════════════════════════════════════════════
 // USERS MANAGEMENT
@@ -10,7 +11,7 @@ import Rating from "../../../core/models/rating.model";
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const { role, search, limit = 10, page = 1 } = req.query;
+    const { role, search } = req.query;
 
     let filter: any = {};
 
@@ -25,24 +26,15 @@ export const getAllUsers = async (req: Request, res: Response) => {
       ];
     }
 
-    const skip = (Number(page) - 1) * Number(limit);
-
     const users = await User.find(filter)
       .select("-password")
-      .limit(Number(limit))
-      .skip(skip)
       .sort({ createdAt: -1 });
 
     const total = await User.countDocuments(filter);
 
     res.status(200).json({
-      data: users,
-      pagination: {
-        total,
-        page: Number(page),
-        limit: Number(limit),
-        pages: Math.ceil(total / Number(limit)),
-      },
+      users: users,
+      total,
     });
   } catch (error) {
     console.error("Error fetching users:", error);
@@ -155,7 +147,7 @@ export const banUser = async (req: Request, res: Response) => {
 
 export const getAllInstructors = async (req: Request, res: Response) => {
   try {
-    const { status = "pending", search, limit = 10, page = 1 } = req.query;
+    const { status, search } = req.query;
 
     let filter: any = {};
 
@@ -170,45 +162,16 @@ export const getAllInstructors = async (req: Request, res: Response) => {
       ];
     }
 
-    const skip = (Number(page) - 1) * Number(limit);
-
     const instructors = await Instructor.find(filter)
       .populate("schools", "name")
       .populate("categories", "name")
-      .populate("nominated_by", "name email")
-      .limit(Number(limit))
-      .skip(skip)
       .sort({ createdAt: -1 });
 
     const total = await Instructor.countDocuments(filter);
 
-    // Attach nomination logs for these instructors
-    const instructorIds = instructors.map((i) => i._id);
-    const requests = await InstructorRequest.find({ instructor: { $in: instructorIds } })
-      .populate('user', 'name email')
-      .sort({ createdAt: -1 });
-
-    const requestsByInstructor: Record<string, any[]> = {};
-    requests.forEach((r) => {
-      const key = r.instructor.toString();
-      if (!requestsByInstructor[key]) requestsByInstructor[key] = [];
-      requestsByInstructor[key].push(r);
-    });
-
-    const data = instructors.map((ins) => {
-      const obj: any = ins.toObject();
-      obj.requests = requestsByInstructor[ins._id.toString()] || [];
-      return obj;
-    });
-
     res.status(200).json({
-      data,
-      pagination: {
-        total,
-        page: Number(page),
-        limit: Number(limit),
-        pages: Math.ceil(total / Number(limit)),
-      },
+      instructors,
+      total,
     });
   } catch (error) {
     console.error("Error fetching instructors:", error);
@@ -312,7 +275,7 @@ export const deleteInstructor = async (req: Request, res: Response) => {
 
 export const getAllReviews = async (req: Request, res: Response) => {
   try {
-    const { status = "pending", search, limit = 10, page = 1 } = req.query;
+    const { status, search, limit = 10, page = 1 } = req.query;
 
     let filter: any = {};
 
@@ -331,8 +294,15 @@ export const getAllReviews = async (req: Request, res: Response) => {
 
     const total = await Rating.countDocuments(filter);
 
+    const mappedReviews = reviews.map((r: any) => ({
+      ...r.toObject(),
+      authorName: r.user?.name || "Ismeretlen",
+      instructorName: r.instructor?.name || "Ismeretlen",
+      status: r.approvalStatus,
+    }));
+
     res.status(200).json({
-      data: reviews,
+      reviews: mappedReviews,
       pagination: {
         total,
         page: Number(page),
@@ -443,26 +413,43 @@ export const deleteReview = async (req: Request, res: Response) => {
 
 export const getAllReports = async (req: Request, res: Response) => {
   try {
-    const { status = "pending", limit = 10, page = 1 } = req.query;
+    const { status, limit = 10, page = 1 } = req.query;
 
     let filter: any = {};
 
-    if (status) {
-      filter.approvalStatus = status;
+    if (status && status !== "all") {
+      filter.status = status;
     }
 
     const skip = (Number(page) - 1) * Number(limit);
 
-    // For now, we'll return empty reports - implement based on your Report model
+    const reportsDb = await Report.find(filter)
+      .populate("user", "name email")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(Number(limit));
+
+    const total = await Report.countDocuments(filter);
+
+    // Map to frontend expected format
+    const mappedReports = reportsDb.map((r: any) => ({
+      _id: r._id,
+      status: r.status === "open" ? "pending" : r.status,
+      reason: r.description,
+      reportedBy: r.user ? r.user.name : r.email || "Anonymus",
+      type: r.category,
+      priority: r.category === "Biztonsági probléma" ? "high" : "medium",
+      createdAt: r.createdAt,
+    }));
+
     res.status(200).json({
-      data: [],
+      reports: mappedReports,
       pagination: {
-        total: 0,
+        total,
         page: Number(page),
         limit: Number(limit),
-        pages: 0,
+        pages: Math.ceil(total / Number(limit)),
       },
-      message: "Report system - implement based on your Report model",
     });
   } catch (error) {
     console.error("Error fetching reports:", error);
@@ -473,11 +460,22 @@ export const getAllReports = async (req: Request, res: Response) => {
 export const resolveReport = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { action } = req.body;
+    const { action, reason } = req.body;
+
+    const newStatus = action === "dismiss" ? "closed" : "resolved";
+
+    const report = await Report.findByIdAndUpdate(
+      id,
+      {
+        status: newStatus,
+        resolution: reason || `Kezelve: ${action}`,
+      },
+      { new: true }
+    );
 
     res.status(200).json({
       message: "Jelentés sikeresen feldolgozva.",
-      data: { id, action },
+      data: report,
     });
   } catch (error) {
     console.error("Error resolving report:", error);
@@ -541,6 +539,7 @@ export const getAnalytics = async (req: Request, res: Response) => {
         totalReviews,
         pendingInstructors,
         pendingReviews,
+        pendingReports: await Report.countDocuments({ status: "open" }),
         approvedInstructors: await Instructor.countDocuments({
           approvalStatus: "approved",
         }),

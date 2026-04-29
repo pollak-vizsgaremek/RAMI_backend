@@ -12,9 +12,13 @@ import instructorRouter from "./api/routes/instructor.routes";
 import authRouter from "./api/routes/auth.routes";
 import adminRouter from "./api/routes/admin.routes";
 import categoriesRouter from "./api/routes/categories.routes";
+import reportRouter from "./api/routes/report.routes";
 
 //-- Database connection import for checking connection
 import { connectDatabase } from "./core/database/mongodb";
+
+//-- Cron service for recalculating ratings
+import { recalculateAllRatings } from "./core/services/ratingCron.service";
 
 //-- dotenv config
 dotenv.config();
@@ -39,6 +43,7 @@ app.use("/api/v1/instructor", instructorRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/categories", categoriesRouter);
+app.use("/api/v1/report", reportRouter);
 
 let expressServer: any = null;
 let isConnected = false;
@@ -52,6 +57,11 @@ export const startServer = async () => {
     return new Promise((resolve) => {
       expressServer = app.listen(PORT, () => {
         console.log(`App started at http://localhost:${PORT}`);
+
+        // Run rating recalculation once on startup, then every hour
+        recalculateAllRatings();
+        setInterval(recalculateAllRatings, 60 * 60 * 1000);
+
         resolve(expressServer);
       });
     });

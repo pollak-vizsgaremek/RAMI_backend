@@ -10,7 +10,7 @@ const ratingSchema = new mongoose.Schema(
     },
     instructor: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Oktato",
+      ref: "Instructor",
       required: [true, "Oktató ID kötelező!"],
       index: true,
     },
