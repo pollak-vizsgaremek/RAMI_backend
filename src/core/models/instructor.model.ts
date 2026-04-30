@@ -36,7 +36,6 @@ const instructorSchema = new mongoose.Schema(
         "Kérem, adjon meg egy érvényes magyar telefonszámot!",
       ],
     },
-    // In oktato.model.ts, change it to this:
     hobbies: [
       {
         type: String,

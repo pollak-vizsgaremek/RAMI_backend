@@ -5,9 +5,8 @@ import InstructorRequest from "../../../core/models/instructorRequest.model";
 import Rating from "../../../core/models/rating.model";
 import Report from "../../../core/models/report.model";
 
-// ═════════════════════════════════════════════════════════════════════════════
-// USERS MANAGEMENT
-// ═════════════════════════════════════════════════════════════════════════════
+
+
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -141,9 +140,8 @@ export const banUser = async (req: Request, res: Response) => {
   }
 };
 
-// ═════════════════════════════════════════════════════════════════════════════
-// INSTRUCTORS MANAGEMENT
-// ═════════════════════════════════════════════════════════════════════════════
+
+
 
 export const getAllInstructors = async (req: Request, res: Response) => {
   try {
@@ -269,9 +267,8 @@ export const deleteInstructor = async (req: Request, res: Response) => {
   }
 };
 
-// ═════════════════════════════════════════════════════════════════════════════
-// REVIEWS MANAGEMENT
-// ═════════════════════════════════════════════════════════════════════════════
+
+
 
 export const getAllReviews = async (req: Request, res: Response) => {
   try {
@@ -407,9 +404,8 @@ export const deleteReview = async (req: Request, res: Response) => {
   }
 };
 
-// ═════════════════════════════════════════════════════════════════════════════
-// REPORTS MANAGEMENT
-// ═════════════════════════════════════════════════════════════════════════════
+
+
 
 export const getAllReports = async (req: Request, res: Response) => {
   try {
@@ -483,9 +479,8 @@ export const resolveReport = async (req: Request, res: Response) => {
   }
 };
 
-// ═════════════════════════════════════════════════════════════════════════════
-// SYSTEM SETTINGS & ANALYTICS
-// ═════════════════════════════════════════════════════════════════════════════
+
+
 
 export const getSystemSettings = async (req: Request, res: Response) => {
   try {

@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import crypto from "crypto"; // Added crypto
+import crypto from "crypto";
 import User from "../../../core/models/user.model";
-import { sendEmail } from "../../../core/services/sendEmail.service"; // Import your email service!
+import { sendEmail } from "../../../core/services/sendEmail.service";
 import Instructor from "../../../core/models/instructor.model";
 
 export const register = async (req: Request, res: Response): Promise<any> => {
@@ -19,10 +19,8 @@ export const register = async (req: Request, res: Response): Promise<any> => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // 1. Generate a random verification token
     const verificationToken = crypto.randomBytes(32).toString("hex");
 
-    // 2. Create the user as UNVERIFIED
     const newUser = await User.create({
       name: name,
       email: email,
@@ -37,11 +35,9 @@ export const register = async (req: Request, res: Response): Promise<any> => {
         .json({ message: "Hiba a felhasználó létrehozásakor!" });
     }
 
-    // 3. Create the verification link
     const verifyUrl = `http://localhost:3300/api/v1/auth/verify/${verificationToken}`;
     const message = `Kedves ${name}!\n\nKöszönjük, hogy regisztráltál a Rate My Instructor oldalra.\nKérlek, kattints az alábbi linkre a fiókod aktiválásához:\n\n${verifyUrl}\n\nHa nem te regisztráltál, kérlek hagyd figyelmen kívül ezt az e-mailt.`;
 
-    // 4. Send the email using your existing service
     try {
       await sendEmail({
         email: newUser.email,
@@ -49,7 +45,6 @@ export const register = async (req: Request, res: Response): Promise<any> => {
         message: message,
       });
 
-      // Tell frontend to show a success message but DO NOT return a JWT token!
       return res.status(201).json({
         success: true,
         message: "Sikeres regisztráció! Kérlek erősítsd meg az e-mail címedet.",
@@ -66,7 +61,7 @@ export const register = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
-// --- NEW FUNCTION: VERIFY THE EMAIL LINK ---
+
 export const verifyEmail = async (
   req: Request,
   res: Response,
@@ -74,15 +69,12 @@ export const verifyEmail = async (
   try {
     const { token } = req.params;
 
-    // First, try to find the user with this token in User model
     let user = await User.findOne({ verificationToken: token });
 
-    // If not found in User model, try Instructor model
     if (!user) {
       user = await Instructor.findOne({ verificationToken: token });
     }
 
-    // If still not found, return error
     if (!user) {
       return res
         .status(400)
@@ -91,12 +83,10 @@ export const verifyEmail = async (
         );
     }
 
-    // Activate the user and remove the token
     user.isVerified = true;
     user.verificationToken = undefined;
     await user.save();
 
-    // Redirect the user back to your React frontend!
     res.redirect("http://localhost:5173/?verified=true");
   } catch (error) {
     console.error("Hiba a verifikációkor:", error);
@@ -118,10 +108,8 @@ export const registerInstructor = async (req: Request, res: Response): Promise<a
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // 1. Generate a random verification token
     const verificationToken = crypto.randomBytes(32).toString("hex");
 
-    // 2. Create the user as UNVERIFIED
     const newUser = await Instructor.create({
       ...req.body,
       password: hashedPassword,
@@ -134,11 +122,9 @@ export const registerInstructor = async (req: Request, res: Response): Promise<a
         .json({ message: "Hiba a felhasználó létrehozásakor!" });
     }
 
-    // 3. Create the verification link
     const verifyUrl = `http://localhost:3300/api/v1/auth/verify/${verificationToken}`;
     const message = `Kedves ${name}!\n\nKöszönjük, hogy regisztráltál a Rate My Instructor oldalra.\nKérlek, kattints az alábbi linkre a fiókod aktiválásához:\n\n${verifyUrl}\n\nHa nem te regisztráltál, kérlek hagyd figyelmen kívül ezt az e-mailt.`;
 
-    // 4. Send the email using your existing service
     try {
       await sendEmail({
         email: newUser.email,
@@ -146,7 +132,6 @@ export const registerInstructor = async (req: Request, res: Response): Promise<a
         message: message,
       });
 
-      // Tell frontend to show a success message but DO NOT return a JWT token!
       return res.status(201).json({
         success: true,
         message: "Sikeres regisztráció! Kérlek erősítsd meg az e-mail címedet.",

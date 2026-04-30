@@ -19,17 +19,16 @@ import { uploadInstructorProfileImage } from "../controllers/instructor/instruct
 
 const instructorRouter = Router();
 
-// GET all users
+
 instructorRouter.get("/", getInstructors);
 
-// GET search results
-// IMPORTANT: This must stay ABOVE the "/:id" route so Express knows you want the search function, not an instructor with the ID of "search"
+
 instructorRouter.get("/search", searchInstructors);
 instructorRouter.get("/cities", getCitiesWithInstructorsCount);
 instructorRouter.get("/leaderboard", getLeaderboard);
 instructorRouter.get("/top", getTopInstructor);
 
-// GET, PUT, DELETE by ID
+
 instructorRouter.get("/:id", getInstructorById);
 instructorRouter.put("/:id", updateInstructor);
 instructorRouter.delete("/:id", deleteInstructor);

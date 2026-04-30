@@ -50,7 +50,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
         email: user.email,
         role: user.role || "user",
         profileImage: user.profileImage,
-      }, // Ensure user obj is sent!
+      },
     });
   } catch (error) {
     console.error("Hiba a belépéskor:", error);

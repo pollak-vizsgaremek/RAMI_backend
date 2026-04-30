@@ -7,13 +7,13 @@ import {
 
 const reportRouter = Router();
 
-// Public - anyone can submit a report
+
 reportRouter.post("/create", createReport);
 
-// Admin - get all reports
+
 reportRouter.get("/", getReports);
 
-// Admin - update report status
+
 reportRouter.put("/:id/status", updateReportStatus);
 
 export default reportRouter;

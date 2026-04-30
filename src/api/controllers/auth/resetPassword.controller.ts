@@ -20,7 +20,7 @@ export const resetPassword = async (
     // 2. Hash the provided token so we can compare it to the hashed version in our database
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-    // Find in User OR Instructor collection
+
     let account: any = await User.findOne({
       passwordResetToken: hashedToken,
       passwordResetExpires: { $gt: Date.now() },
