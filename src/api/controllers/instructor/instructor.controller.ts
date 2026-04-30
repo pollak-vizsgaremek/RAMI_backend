@@ -204,16 +204,28 @@ export const updateInstructor = async (req: Request, res: Response) => {
   try {
     const instructor = await Instructor.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
+      runValidators: true,
     });
     if (!instructor) {
       return res.status(404).json({ error: "Oktató nem található." });
     }
     res.status(200).json(instructor);
-  } catch (error) {
+  } catch (error: any) {
+    console.error("Hiba az oktató frissítésekor:", error);
+
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors).map((err: any) => err.message);
+      return res.status(400).json({ error: messages.join(", ") });
+    }
+
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
+      return res.status(400).json({ error: `Ez a(z) ${field} már használatban van.` });
+    }
+
     res
       .status(500)
       .json({ error: "Szerver hiba a felhasználó frissítésekor." });
-    console.error("Hiba a felhasználó frissítésekor:", error);
   }
 };
 
